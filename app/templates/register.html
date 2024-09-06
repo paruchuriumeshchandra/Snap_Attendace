@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register</title>
+</head>
+<body>
+    <h1>Register</h1>
+    <form method="post" action="{{ url_for('register') }}">
+        <label for="username">Username:</label>
+        <input type="text" id="username" name="username" required>
+        <br>
+        <label for="password">Password:</label>
+        <input type="password" id="password" name="password" required>
+        <br>
+        <button type="submit">Register</button>
+    </form>
+    <p><a href="{{ url_for('login') }}">Already have an account? Login here</a></p>
+    <h2>Register Device</h2>
+    <form method="post" action="{{ url_for('register_device') }}">
+        <label for="username">Username:</label>
+        <input type="text" id="username" name="username" required>
+        <br>
+        <label for="device_id">Device ID:</label>
+        <input type="text" id="device_id" name="device_id" required>
+        <br>
+        <label for="latitude">Latitude:</label>
+        <input type="text" id="latitude" name="latitude" required>
+        <br>
+        <label for="longitude">Longitude:</label>
+        <input type="text" id="longitude" name="longitude" required>
+        <br>
+        <button type="submit">Register Device</button>
+    </form>
+    <p><a href="{{ url_for('login') }}">Already have an account? Login here</a></p>
+</body>
+</html>

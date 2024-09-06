@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Scan QR Code</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html5-qrcode/2.3.8/html5-qrcode.min.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        #qr-reader {
+            width: 100%;
+            height: 400px;
+            border: 1px solid #ccc;
+        }
+        #result {
+            margin-top: 20px;
+            font-weight: bold;
+        }
+        .error {
+            color: red;
+            font-size: 0.9em;
+        }
+    </style>
+</head>
+<body>
+    <h1>Scan QR Code</h1>
+    {% with messages = get_flashed_messages() %}
+        {% if messages %}
+            <ul>
+                {% for message in messages %}
+                    <li class="error">{{ message }}</li>
+                {% endfor %}
+            </ul>
+        {% endif %}
+    {% endwith %}
+    
+    <div id="qr-reader"></div>
+    <div id="result">Scan result will appear here...</div>
+
+    <form id="data-form" method="post" action="/scan" style="display: none;">
+        <input type="hidden" id="qr_code_data" name="qr_code_data">
+        <input type="hidden" id="username" name="username">
+        <input type="hidden" id="device_id" name="device_id">
+        <input type="hidden" id="latitude" name="latitude">
+        <input type="hidden" id="longitude" name="longitude">
+        <input type="submit" value="Submit">
+    </form>
+
+    <script>
+        function onScanSuccess(decodedText, decodedResult) {
+            // Handle the scanned QR code text
+            document.getElementById('result').innerText = `QR Code Data: ${decodedText}`;
+            document.getElementById('qr_code_data').value = decodedText;
+
+            // Request location access and fill in the location data
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(
+                    (position) => {
+                        document.getElementById('latitude').value = position.coords.latitude;
+                        document.getElementById('longitude').value = position.coords.longitude;
+                        // Show the form
+                        document.getElementById('data-form').style.display = 'block';
+                        document.getElementById('data-form').scrollIntoView();
+                    },
+                    (error) => {
+                        console.error('Error obtaining location:', error);
+                        // Handle errors or fallback here
+                    }
+                );
+            } else {
+                console.error('Geolocation is not supported by this browser.');
+                // Handle lack of geolocation support here
+            }
+        }
+
+        function onScanError(errorMessage) {
+            console.warn(`QR Code Scan Error: ${errorMessage}`);
+        }
+
+        const html5QrCode = new Html5Qrcode("qr-reader");
+        html5QrCode.start(
+            { facingMode: "environment" }, 
+            { fps: 10, qrbox: 250 },
+            onScanSuccess,
+            onScanError
+        ).catch(err => {
+            console.error(`Failed to start QR scanner: ${err}`);
+        });
+    </script>
+</body>
+</html>
